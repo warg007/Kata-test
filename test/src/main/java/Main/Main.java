@@ -86,7 +86,8 @@ public class Main {
                     break;
                 case "-":
                     if ((romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) & (first < second)) {
-                        throw new MoreThenZeroException("Результатом работы калькулятора с римскими числами могут быть" + " только положительные числа.");
+                        throw new MoreThenZeroException("Результатом работы калькулятора с римскими числами могут быть"
+                                + " только положительные числа.");
                     }
                     if (romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) {
                         System.out.println(convertToRome(first - second));
@@ -95,7 +96,11 @@ public class Main {
                     System.out.println(first - second);
                     break;
                 case "/":
-                    if (romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) {
+                    if ((romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) & ((first / second) <= 0)) {
+                        throw new MoreThenZeroException("Результатом работы калькулятора с римскими числами могут быть"
+                                + " только положительные числа.");
+                    }
+                    if ((romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) & ((first / second) > 0)) {
                         System.out.println(convertToRome(first / second));
                         break;
                     }
@@ -135,5 +140,7 @@ public class Main {
         } while (number != 0);
         return rome;
     }
+
+
 }
 
