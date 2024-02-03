@@ -2,21 +2,23 @@ package Main;
 
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 public class Main {
     public static void main(String[] args) throws Exception {
 
-        HashMap<String, String> rome = new HashMap<>();
-        rome.put("I", "1");
-        rome.put("II", "2");
-        rome.put("III", "3");
-        rome.put("IV", "4");
-        rome.put("V", "5");
-        rome.put("VI", "6");
-        rome.put("VII", "7");
-        rome.put("VIII", "8");
-        rome.put("IX", "9");
-        rome.put("X", "10");
+        HashMap<String, String> romeKeyMap = new HashMap<>();
+        romeKeyMap.put("I", "1");
+        romeKeyMap.put("II", "2");
+        romeKeyMap.put("III", "3");
+        romeKeyMap.put("IV", "4");
+        romeKeyMap.put("V", "5");
+        romeKeyMap.put("VI", "6");
+        romeKeyMap.put("VII", "7");
+        romeKeyMap.put("VIII", "8");
+        romeKeyMap.put("IX", "9");
+        romeKeyMap.put("X", "10");
+
 
         class SignException extends Exception {
             SignException(String description) {
@@ -56,18 +58,17 @@ public class Main {
             if (oneByOne.length == 3) {
                 x = oneByOne[0];
                 y = oneByOne[2];
-                if ((rome.containsKey(x) & rome.containsKey(y)) | (rome.containsValue(x) & rome.containsValue(y))) {
-                    if (rome.containsKey(x) & rome.containsKey(y)) {
-                        first = Integer.parseInt(rome.get(x));
-                        second = Integer.parseInt(rome.get(y));
+                if ((romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) | (romeKeyMap.containsValue(x) & romeKeyMap.containsValue(y))) {
+                    if (romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) {
+                        first = Integer.parseInt(romeKeyMap.get(x));
+                        second = Integer.parseInt(romeKeyMap.get(y));
                     }
-                    if (rome.containsValue(x) & rome.containsValue(y)) {
+                    if (romeKeyMap.containsValue(x) & romeKeyMap.containsValue(y)) {
                         first = Integer.parseInt(x);
                         second = Integer.parseInt(y);
                     }
                 } else {
-                    throw new MixedRomeAndArabic("Некорректно введены значения. Римские цифры от I до X, " +
-                            "арабские от 1 до 10. Смешивать нельзя.");
+                    throw new MixedRomeAndArabic("Некорректно введены значения. Римские цифры от I до X, " + "арабские от 1 до 10. Смешивать нельзя.");
                 }
             } else {
                 throw new LengthException("Неверный формат ввода данных. Пример: 1 *пробел* - *пробел* 1");
@@ -77,25 +78,62 @@ public class Main {
             String sign = oneByOne[1];
             switch (sign) {
                 case "+":
+                    if (romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) {
+                        System.out.println(convertToRome(first + second));
+                        break;
+                    }
                     System.out.println(first + second);
                     break;
                 case "-":
-                    if ((rome.containsKey(x) & rome.containsKey(y)) & (first < second)) {
-                        throw new MoreThenZeroException("Результатом работы калькулятора с римскими числами могут быть" +
-                                " только положительные числа.");
+                    if ((romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) & (first < second)) {
+                        throw new MoreThenZeroException("Результатом работы калькулятора с римскими числами могут быть" + " только положительные числа.");
+                    }
+                    if (romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) {
+                        System.out.println(convertToRome(first - second));
+                        break;
                     }
                     System.out.println(first - second);
                     break;
                 case "/":
+                    if (romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) {
+                        System.out.println(convertToRome(first / second));
+                        break;
+                    }
                     System.out.println(first / second);
                     break;
                 case "*":
+                    if (romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) {
+                        System.out.println(convertToRome(first * second));
+                        break;
+                    }
                     System.out.println(first * second);
                     break;
                 default:
                     throw new SignException("Указан неверный арифметический знак.");
             }
         }
+    }
+
+    public static String convertToRome(int number) {
+        TreeMap<Integer, String> arabicKeyMap = new TreeMap<>();
+        arabicKeyMap.put(100, "C");
+        arabicKeyMap.put(90, "XC");
+        arabicKeyMap.put(50, "L");
+        arabicKeyMap.put(40, "XL");
+        arabicKeyMap.put(10, "X");
+        arabicKeyMap.put(9, "IX");
+        arabicKeyMap.put(5, "V");
+        arabicKeyMap.put(4, "IV");
+        arabicKeyMap.put(1, "I");
+
+        String rome = "";
+        int arabicKey;
+        do {
+            arabicKey = arabicKeyMap.floorKey(number);
+            rome += arabicKeyMap.get(arabicKey);
+            number -= arabicKey;
+        } while (number != 0);
+        return rome;
     }
 }
 
