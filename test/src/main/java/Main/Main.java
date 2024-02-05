@@ -7,6 +7,42 @@ import java.util.TreeMap;
 public class Main {
     public static void main(String[] args) throws Exception {
 
+        while (true) {
+
+            Scanner console = new Scanner(System.in);
+            String mathExpression = console.nextLine();
+
+            System.out.println(calc(mathExpression));
+        }
+    }
+
+    static class LengthException extends Exception {
+        LengthException(String description) {
+            super(description);
+        }
+    }
+
+    static class SignException extends Exception {
+        SignException(String description) {
+            super(description);
+        }
+
+    }
+
+    static class MixedRomeAndArabic extends Exception {
+        MixedRomeAndArabic(String description) {
+            super(description);
+        }
+    }
+
+    static class MoreThenZeroException extends Exception {
+        MoreThenZeroException(String description) {
+            super(description);
+        }
+    }
+
+    public static String calc(String input) throws Exception {
+
         HashMap<String, String> romeKeyMap = new HashMap<>();
         romeKeyMap.put("I", "1");
         romeKeyMap.put("II", "2");
@@ -19,107 +55,83 @@ public class Main {
         romeKeyMap.put("IX", "9");
         romeKeyMap.put("X", "10");
 
-
-        class SignException extends Exception {
-            SignException(String description) {
-                super(description);
-            }
-
-        }
-
-        class MixedRomeAndArabic extends Exception {
-            MixedRomeAndArabic(String description) {
-                super(description);
-            }
-        }
-
-        class MoreThenZeroException extends Exception {
-            MoreThenZeroException(String description) {
-                super(description);
-            }
-        }
-
-        class LengthException extends Exception {
-            LengthException(String description) {
-                super(description);
-            }
-        }
-
         int first = 0;
         int second = 0;
-        String x;
-        String y;
+        boolean isArabic;
+        String firstPoint;
+        String secondPoint;
+        String answer;
 
-        while (true) {
-            Scanner console = new Scanner(System.in);
-            String mathExpression = console.nextLine();
-            String[] oneByOne = mathExpression.split(" ");
+        String[] oneByOne = input.split(" ");
 
-            if (oneByOne.length == 3) {
-                x = oneByOne[0];
-                y = oneByOne[2];
-                if ((romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) | (romeKeyMap.containsValue(x) & romeKeyMap.containsValue(y))) {
-                    if (romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) {
-                        first = Integer.parseInt(romeKeyMap.get(x));
-                        second = Integer.parseInt(romeKeyMap.get(y));
-                    }
-                    if (romeKeyMap.containsValue(x) & romeKeyMap.containsValue(y)) {
-                        first = Integer.parseInt(x);
-                        second = Integer.parseInt(y);
-                    }
-                } else {
-                    throw new MixedRomeAndArabic("Некорректно введены значения. Римские цифры от I до X, " + "арабские от 1 до 10. Смешивать нельзя.");
+        if (oneByOne.length == 3) {
+            firstPoint = oneByOne[0];
+            secondPoint = oneByOne[2];
+            if ((romeKeyMap.containsKey(firstPoint) & romeKeyMap.containsKey(secondPoint)) |
+                    (romeKeyMap.containsValue(firstPoint) & romeKeyMap.containsValue(secondPoint))) {
+                if (romeKeyMap.containsKey(firstPoint) & romeKeyMap.containsKey(secondPoint)) {
+                    first = Integer.parseInt(romeKeyMap.get(firstPoint));
+                    second = Integer.parseInt(romeKeyMap.get(secondPoint));
+                }
+                if (romeKeyMap.containsValue(firstPoint) & romeKeyMap.containsValue(secondPoint)) {
+                    first = Integer.parseInt(firstPoint);
+                    second = Integer.parseInt(secondPoint);
                 }
             } else {
-                throw new LengthException("Неверный формат ввода данных. Пример: 1 *пробел* - *пробел* 1");
+                throw new MixedRomeAndArabic("Некорректно введены значения. Римские цифры от I до X, "
+                        + "арабские от 1 до 10. Смешивать нельзя.");
             }
-
-
-            String sign = oneByOne[1];
-            switch (sign) {
-                case "+":
-                    if (romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) {
-                        System.out.println(convertToRome(first + second));
-                        break;
-                    }
-                    System.out.println(first + second);
-                    break;
-                case "-":
-                    if ((romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) & (first < second)) {
-                        throw new MoreThenZeroException("Результатом работы калькулятора с римскими числами могут быть"
-                                + " только положительные числа.");
-                    }
-                    if (romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) {
-                        System.out.println(convertToRome(first - second));
-                        break;
-                    }
-                    System.out.println(first - second);
-                    break;
-                case "/":
-                    if ((romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) & ((first / second) <= 0)) {
-                        throw new MoreThenZeroException("Результатом работы калькулятора с римскими числами могут быть"
-                                + " только положительные числа.");
-                    }
-                    if ((romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) & ((first / second) > 0)) {
-                        System.out.println(convertToRome(first / second));
-                        break;
-                    }
-                    System.out.println(first / second);
-                    break;
-                case "*":
-                    if (romeKeyMap.containsKey(x) & romeKeyMap.containsKey(y)) {
-                        System.out.println(convertToRome(first * second));
-                        break;
-                    }
-                    System.out.println(first * second);
-                    break;
-                default:
-                    throw new SignException("Указан неверный арифметический знак.");
-            }
+        } else {
+            throw new LengthException("Неверный формат ввода данных. Пример: 1 *пробел* - *пробел* 1");
         }
+
+        isArabic = isArabic(romeKeyMap, firstPoint, secondPoint);
+
+        String sign = oneByOne[1];
+
+        switch (sign) {
+            case "+":
+                if (isArabic) {
+                    answer = String.valueOf(first + second);
+                } else {
+                    answer = convertToRome(first + second);
+                }
+                break;
+            case "-":
+                if ((romeKeyMap.containsKey(firstPoint) & romeKeyMap.containsKey(secondPoint)) & (first <= second)) {
+                    throw new MoreThenZeroException("Результатом работы калькулятора с римскими числами могут быть"
+                            + " только положительные числа.");
+                } else if (isArabic) {
+                    answer = String.valueOf(first - second);
+                } else {
+                    answer = convertToRome(first - second);
+                }
+                break;
+            case "/":
+                if ((romeKeyMap.containsKey(firstPoint) & romeKeyMap.containsKey(secondPoint)) & ((first / second) <= 0)) {
+                    throw new MoreThenZeroException("Результатом работы калькулятора с римскими числами могут быть"
+                            + " только положительные числа.");
+                }
+                if (isArabic) {
+                    answer = String.valueOf(first / second);
+                } else {
+                    answer = convertToRome(first / second);
+                }
+                break;
+            case "*":
+                if (isArabic) {
+                    answer = String.valueOf(first * second);
+                } else {
+                    answer = convertToRome(first * second);
+                }
+                break;
+            default:
+                throw new SignException("Указан неверный арифметический знак.");
+        }
+        return answer;
     }
 
-    public static String convertToRome(int number) {
+    static String convertToRome(int number) {
         TreeMap<Integer, String> arabicKeyMap = new TreeMap<>();
         arabicKeyMap.put(100, "C");
         arabicKeyMap.put(90, "XC");
@@ -141,6 +153,13 @@ public class Main {
         return rome;
     }
 
+    static boolean isArabic(HashMap<String, String> romeKeyMap, String firstPoint, String secondPoint) {
+        if (romeKeyMap.containsKey(firstPoint) & romeKeyMap.containsKey(secondPoint)) {
+            return false;
+        } else {
+            return true;
 
+        }
+    }
 }
 
